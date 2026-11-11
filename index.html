@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>برنامج محاكاة المحافظة والمجالس المحلية</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Cairo Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { cairo: ['Cairo', 'sans-serif'] },
+                    colors: {
+                        gov: { 50: '#f0f9ff', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e' },
+                        gold: { 400: '#fbbf24', 500: '#f59e0b' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #f1f5f9; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-step { display: none; }
+        .form-step.active { display: block; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-gov-900 via-gov-800 to-gov-700 text-white shadow-xl">
+        <div class="max-w-4xl mx-auto px-4 py-6">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-right">
+                <div>
+                    <span class="inline-block px-3 py-1 bg-white/10 rounded-full text-gold-400 text-xs font-semibold mb-2 border border-white/20">
+                        <i class="fas fa-landmark text-xs"></i> منصة الكوادر الشبابية الرسمية
+                    </span>
+                    <h1 class="text-2xl sm:text-3xl font-black">برنامج محاكاة المحافظة</h1>
+                    <p class="text-gov-100 text-sm mt-1">بوابة التسجيل الإلكتروني واستعلام حالة الطلبات لعام 2026.</p>
+                </div>
+                <div class="bg-white/10 p-3 rounded-2xl border border-white/20 flex flex-col items-center justify-center w-20 h-20">
+                    <i class="fas fa-shield-halved text-3xl text-gold-400"></i>
+                    <span class="text-[9px] font-bold mt-1">محافظة الفيوم</span>
+                </div>
+            </div>
+
+            <!-- Main Navigation Switcher -->
+            <div class="flex gap-2 mt-6 pt-4 border-t border-white/10">
+                <button id="nav-tab-reg" onclick="switchMainTab('reg')" class="px-5 py-2.5 rounded-xl font-bold text-sm bg-white text-gov-900 shadow transition-all flex items-center gap-2 cursor-pointer">
+                    <i class="fas fa-file-signature"></i> التسجيل للبرنامج
+                </button>
+                <button id="nav-tab-track" onclick="switchMainTab('track')" class="px-5 py-2.5 rounded-xl font-bold text-sm bg-white/10 text-white hover:bg-white/25 border border-white/20 transition-all flex items-center gap-2 cursor-pointer">
+                    <i class="fas fa-search-dollar"></i> الاستعلام عن الطلب
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-3xl mx-auto px-4 py-8 w-full flex-grow">
+
+        <!-- ================= TAB 1: REGISTRATION ================= -->
+        <div id="tab-content-reg" class="tab-content active">
+            
+            <!-- Stepper Indicators -->
+            <div id="stepperContainer" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                <div class="flex items-center justify-between text-center relative">
+                    <div class="flex flex-col items-center z-10">
+                        <div id="step-ind-1" class="w-10 h-10 rounded-full bg-gov-600 text-white font-bold flex items-center justify-center shadow-md">1</div>
+                        <span class="text-xs font-bold text-gov-800 mt-1">البيانات الشخصية</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-gray-200 mx-2 relative">
+                        <div id="progress-bar" class="absolute right-0 top-0 bottom-0 bg-gov-600 transition-all duration-300" style="width: 0%;"></div>
+                    </div>
+                    <div class="flex flex-col items-center z-10">
+                        <div id="step-ind-2" class="w-10 h-10 rounded-full bg-gray-200 text-gray-500 font-bold flex items-center justify-center">2</div>
+                        <span class="text-xs font-semibold text-gray-400 mt-1">اختيار اللجنة</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-gray-200 mx-2"></div>
+                    <div class="flex flex-col items-center z-10">
+                        <div id="step-ind-3" class="w-10 h-10 rounded-full bg-gray-200 text-gray-500 font-bold flex items-center justify-center">3</div>
+                        <span class="text-xs font-semibold text-gray-400 mt-1">الدافع والختام</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Card Box -->
+            <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sm:p-8">
+                <form id="simulationMasterForm" onsubmit="handleFormSubmission(event)">
+                    
+                    <!-- STEP 1 -->
+                    <div id="form-step-1" class="form-step active space-y-5">
+                        <div class="border-b pb-3 mb-4">
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <i class="fas fa-user-circle text-gov-600"></i> الخطوة الأولى: البيانات الأساسية
+                            </h2>
+                            <p class="text-xs text-gray-500">يرجى إدخال البيانات بدقة متناهية كما هي بالبطاقة الشخصية.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">الاسم الرباعي كاملاً <span class="text-red-500">*</span></label>
+                            <input type="text" id="fullName" required placeholder="مثال: أحمد محمد علي حسن" class="w-full p-3 rounded-xl border border-gray-300 focus:border-gov-600 outline-none text-sm bg-white">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">الرقم القومي (14 رقم) <span class="text-red-500">*</span></label>
+                                <input type="text" id="nationalId" maxlength="14" required placeholder="2040101XXXXXXXX" class="w-full p-3 rounded-xl border border-gray-300 focus:border-gov-600 outline-none text-sm bg-white" dir="ltr">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">تاريخ الميلاد <span class="text-red-500">*</span></label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <select id="bDay" required class="p-2.5 rounded-xl border border-gray-300 bg-white text-xs focus:border-gov-600 outline-none">
+                                        <option value="" disabled selected>اليوم</option>
+                                    </select>
+                                    <select id="bMonth" required class="p-2.5 rounded-xl border border-gray-300 bg-white text-xs focus:border-gov-600 outline-none">
+                                        <option value="" disabled selected>الشهر</option>
+                                        <option value="01">يناير</option><option value="02">فبراير</option><option value="03">مارس</option>
+                                        <option value="04">أبريل</option><option value="05">مايو</option><option value="06">يونيو</option>
+                                        <option value="07">يوليو</option><option value="08">أغسطس</option><option value="09">سبتمبر</option>
+                                        <option value="10">أكتوبر</option><option value="11">نوفمبر</option><option value="12">ديسمبر</option>
+                                    </select>
+                                    <select id="bYear" required class="p-2.5 rounded-xl border border-gray-300 bg-white text-xs focus:border-gov-600 outline-none">
+                                        <option value="" disabled selected>السنة</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">رقم الهاتف المحمول <span class="text-red-500">*</span></label>
+                                <input type="tel" id="phone" required placeholder="010XXXXXXXX" class="w-full p-3 rounded-xl border border-gray-300 focus:border-gov-600 outline-none text-sm bg-white" dir="ltr">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">البريد الإلكتروني <span class="text-red-500">*</span></label>
+                                <input type="email" id="email" required placeholder="name@example.com" class="w-full p-3 rounded-xl border border-gray-300 focus:border-gov-600 outline-none text-sm bg-white" dir="ltr">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">المؤهل الدراسي <span class="text-red-500">*</span></label>
+                                <select id="qualification" required class="w-full p-3 rounded-xl border border-gray-300 bg-white focus:border-gov-600 outline-none text-sm">
+                                    <option value="" disabled selected>اختر المؤهل العلمي</option>
+                                    <option value="طالب جامعي">طالب جامعي</option>
+                                    <option value="بكالوريوس / ليسانس">بكالوريوس / ليسانس</option>
+                                    <option value="دبلوم متوسط">دبلوم فني / متوسط</option>
+                                    <option value="دراسات عليا">دراسات عليا</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">المركز / الحي / المدينة <span class="text-red-500">*</span></label>
+                                <input type="text" id="city" required placeholder="مثال: مركز الفيوم" class="w-full p-3 rounded-xl border border-gray-300 focus:border-gov-600 outline-none text-sm bg-white">
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t flex justify-end">
+                            <button type="button" onclick="changeStep(2)" class="px-7 py-3 bg-gov-600 hover:bg-gov-700 text-white font-bold rounded-xl shadow transition-all flex items-center gap-2 text-sm cursor-pointer">
+                                <span>التالي: اختيار اللجنة</span>
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2 -->
+                    <div id="form-step-2" class="form-step space-y-5">
+                        <div class="border-b pb-3 mb-4">
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <i class="fas fa-sitemap text-gov-600"></i> الخطوة الثانية: اختيار اللجنة المتخصصة
+                            </h2>
+                            <p class="text-xs text-gray-500">اختر لجنة واحدة للمشاركة في أعمال محاكاة المجالس المحلية.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <label class="p-3.5 bg-gray-50 hover:bg-gov-50 border rounded-xl cursor-pointer flex items-start gap-3 transition-all">
+                                <input type="radio" name="committee" value="لجنة الصحة والسكان" class="mt-1 text-gov-600">
+                                <div>
+                                    <span class="block font-bold text-sm text-gray-800">لجنة الصحة والسكان</span>
+                                    <span class="text-[11px] text-gray-500">متابعة المستشفيات والخدمات الصحية.</span>
+                                </div>
+                            </label>
+                            <label class="p-3.5 bg-gray-50 hover:bg-gov-50 border rounded-xl cursor-pointer flex items-start gap-3 transition-all">
+                                <input type="radio" name="committee" value="لجنة الإدارة والخدمات المحلية" class="mt-1 text-gov-600">
+                                <div>
+                                    <span class="block font-bold text-sm text-gray-800">لجنة الإدارة والخدمات المحلية</span>
+                                    <span class="text-[11px] text-gray-500">مرافق الطرق، النظافة، والإنارة.</span>
+                                </div>
+                            </label>
+                            <label class="p-3.5 bg-gray-50 hover:bg-gov-50 border rounded-xl cursor-pointer flex items-start gap-3 transition-all">
+                                <input type="radio" name="committee" value="لجنة الشباب والرياضة" class="mt-1 text-gov-600">
+                                <div>
+                                    <span class="block font-bold text-sm text-gray-800">لجنة الشباب والرياضة</span>
+                                    <span class="text-[11px] text-gray-500">مراكز الشباب والأنشطة الشبابية.</span>
+                                </div>
+                            </label>
+                            <label class="p-3.5 bg-gray-50 hover:bg-gov-50 border rounded-xl cursor-pointer flex items-start gap-3 transition-all">
+                                <input type="radio" name="committee" value="لجنة التموين والزراعة" class="mt-1 text-gov-600">
+                                <div>
+                                    <span class="block font-bold text-sm text-gray-800">لجنة التموين والزراعة</span>
+                                    <span class="text-[11px] text-gray-500">مراقبة الأسواق والسلع والأمن الغذائي.</span>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="pt-4 border-t flex justify-between items-center">
+                            <button type="button" onclick="changeStep(1)" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-sm transition-all flex items-center gap-2 cursor-pointer">
+                                <i class="fas fa-arrow-right"></i> السابق
+                            </button>
+                            <button type="button" onclick="changeStep(3)" class="px-7 py-3 bg-gov-600 hover:bg-gov-700 text-white font-bold rounded-xl shadow transition-all flex items-center gap-2 text-sm cursor-pointer">
+                                <span>التالي: خطاب الدافع</span>
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3 -->
+                    <div id="form-step-3" class="form-step space-y-5">
+                        <div class="border-b pb-3 mb-4">
+                            <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <i class="fas fa-feather-pointed text-gov-600"></i> الخطوة الثالثة: خطابات الدافع والمرفقات
+                            </h2>
+                            <p class="text-xs text-gray-500">اكتب دافعك للمشاركة وأكد صحة بياناتك لإنهاء التسجيل.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">لماذا ترغب في الانضمام للبرنامج وما هي مقترحاتك؟ <span class="text-red-500">*</span></label>
+                            <textarea id="motivation" required rows="4" placeholder="اكتب دوافعك وأهدافك بوضوح..." class="w-full p-3 rounded-xl border border-gray-300 focus:border-gov-600 outline-none text-sm"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">إرفاق السيرة الذاتية (CV) <span class="text-xs text-gray-400 font-normal">(اختياري - PDF)</span></label>
+                            <input type="file" id="cvFile" accept=".pdf" class="w-full p-2.5 rounded-xl border border-gray-300 bg-gray-50 text-xs text-gray-500">
+                        </div>
+
+                        <div class="bg-gov-50 p-3.5 rounded-xl border border-gov-100 flex items-start gap-3">
+                            <input type="checkbox" id="termsCheck" required class="mt-1">
+                            <label for="termsCheck" class="text-xs text-gray-700 leading-relaxed cursor-pointer">
+                                أقر بصحة كافة البيانات المدونة، وأتعهد بالالتزام بحضور كافة ورش العمل والجلسات التدريبية في حال قبولي بالبرنامج.
+                            </label>
+                        </div>
+
+                        <div class="pt-4 border-t flex justify-between items-center">
+                            <button type="button" onclick="changeStep(2)" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-sm transition-all flex items-center gap-2 cursor-pointer">
+                                <i class="fas fa-arrow-right"></i> السابق
+                            </button>
+                            <button type="submit" id="submitBtn" class="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl shadow-lg transition-all flex items-center gap-2 text-sm cursor-pointer">
+                                <i class="fas fa-paper-plane"></i> تقديم الطلب الآن
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+
+                <!-- SUCCESS VIEW CARD -->
+                <div id="successCardBox" class="hidden text-center space-y-4 py-6">
+                    <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h2 class="text-2xl font-black text-gray-800">تم تقديم طلبك بنجاح!</h2>
+                    <p class="text-sm text-gray-600 max-w-md mx-auto">
+                        تم اعتماد استمارة التسجيل الخاصة بك بنجاح وحفظها سحابياً. هذا هو رقم الطلب الخاص بك للاستعلام لاحقاً:
+                    </p>
+                    <div class="bg-gray-100 p-4 rounded-xl max-w-xs mx-auto font-mono text-lg font-bold text-gov-900 tracking-wider border" id="finalDisplayAppId">
+                        GOV-2026-XXXX
+                    </div>
+                    <div class="flex justify-center gap-3 pt-2">
+                        <button onclick="copyAppId()" class="px-4 py-2 bg-gov-600 text-white rounded-xl text-xs font-bold hover:bg-gov-700 transition-all cursor-pointer">
+                            <i class="fas fa-copy ml-1"></i> نسخ رقم الطلب
+                        </button>
+                        <button onclick="switchMainTab('track')" class="px-4 py-2 bg-gray-800 text-white rounded-xl text-xs font-bold hover:bg-gray-900 transition-all cursor-pointer">
+                            <i class="fas fa-search ml-1"></i> الاستعلام عن حالة الطلب
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= TAB 2: TRACKING ================= -->
+        <div id="tab-content-track" class="tab-content space-y-6">
+            <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sm:p-8">
+                <div class="border-b pb-3 mb-4">
+                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                        <i class="fas fa-search text-gov-600"></i> الاستعلام عن حالة الطلب برقم التسجيل
+                    </h2>
+                    <p class="text-xs text-gray-500">أدخل رقم الطلب الخاص بك لمعرفة موقف القبول والمقابلات الشخصية أونلاين.</p>
+                </div>
+
+                <form onsubmit="executeTrackingSearch(event)" class="flex gap-2">
+                    <input type="text" id="trackSearchInput" required placeholder="مثال: GOV-2026-XXXX" class="flex-grow p-3 rounded-xl border border-gray-300 focus:border-gov-600 outline-none text-sm uppercase font-mono bg-white">
+                    <button type="submit" class="px-6 py-3 bg-gov-600 hover:bg-gov-700 text-white font-bold rounded-xl text-sm transition-all flex items-center gap-2 cursor-pointer">
+                        <i class="fas fa-search"></i> بحث
+                    </button>
+                </form>
+            </div>
+
+            <div id="trackingResultContainer" class="hidden"></div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-4 text-center text-xs text-gray-500">
+        <p>© 2026 برنامج محاكاة المحافظة والمجالس المحلية - جميع الحقوق محفوظة</p>
+    </footer>
+
+    <!-- JavaScript Logic & Supabase Cloud Sync -->
+    <script>
+        // إعدادات اتصال Supabase الخاصة بك
+        const SUPABASE_URL = 'https://oolwmzcwevyxzkbmcqkn.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_NE4S9L4iCJGr1Q1eGTCYKw_AvxTMn9u';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let activeStep = 1;
+        let createdAppId = "";
+
+        // Initialize Birthdate selects on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const daySel = document.getElementById('bDay');
+            const yearSel = document.getElementById('bYear');
+            
+            if (daySel && yearSel) {
+                for (let i = 1; i <= 31; i++) {
+                    let opt = document.createElement('option');
+                    opt.value = i < 10 ? '0' + i : i;
+                    opt.textContent = i;
+                    daySel.appendChild(opt);
+                }
+                const currentYr = new Date().getFullYear();
+                for (let y = currentYr - 16; y >= currentYr - 40; y--) {
+                    let opt = document.createElement('option');
+                    opt.value = y;
+                    opt.textContent = y;
+                    yearSel.appendChild(opt);
+                }
+            }
+        });
+
+        // Switch main tabs
+        function switchMainTab(tabName) {
+            document.getElementById('tab-content-reg').classList.remove('active');
+            document.getElementById('tab-content-track').classList.remove('active');
+            document.getElementById('nav-tab-reg').className = "px-5 py-2.5 rounded-xl font-bold text-sm bg-white/10 text-white hover:bg-white/25 border border-white/20 transition-all flex items-center gap-2 cursor-pointer";
+            document.getElementById('nav-tab-track').className = "px-5 py-2.5 rounded-xl font-bold text-sm bg-white/10 text-white hover:bg-white/25 border border-white/20 transition-all flex items-center gap-2 cursor-pointer";
+
+            if (tabName === 'reg') {
+                document.getElementById('tab-content-reg').classList.add('active');
+                document.getElementById('nav-tab-reg').className = "px-5 py-2.5 rounded-xl font-bold text-sm bg-white text-gov-900 shadow transition-all flex items-center gap-2 cursor-pointer";
+            } else {
+                document.getElementById('tab-content-track').classList.add('active');
+                document.getElementById('nav-tab-track').className = "px-5 py-2.5 rounded-xl font-bold text-sm bg-white text-gov-900 shadow transition-all flex items-center gap-2 cursor-pointer";
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Change wizard steps securely
+        function changeStep(targetStep) {
+            if (targetStep > activeStep) {
+                if (activeStep === 1) {
+                    const name = document.getElementById('fullName').value.trim();
+                    const nid = document.getElementById('nationalId').value.trim();
+                    const day = document.getElementById('bDay').value;
+                    const month = document.getElementById('bMonth').value;
+                    const year = document.getElementById('bYear').value;
+                    const phone = document.getElementById('phone').value.trim();
+                    const email = document.getElementById('email').value.trim();
+                    const qual = document.getElementById('qualification').value;
+                    const city = document.getElementById('city').value.trim();
+
+                    if (!name || !nid || nid.length !== 14 || !day || !month || !year || !phone || !email || !qual || !city) {
+                        alertMessage('يرجى استيفاء كافة بيانات الخطوة الأولى بدقة (الرقم القومي 14 رقم وتاريخ الميلاد الكامل).');
+                        return;
+                    }
+                } else if (activeStep === 2) {
+                    const comm = document.querySelector('input[name="committee"]:checked');
+                    if (!comm) {
+                        alertMessage('يرجى اختيار اللجنة المتخصصة للمتابعة.');
+                        return;
+                    }
+                }
+            }
+
+            // Hide all form steps
+            document.getElementById('form-step-1').classList.remove('active');
+            document.getElementById('form-step-2').classList.remove('active');
+            document.getElementById('form-step-3').classList.remove('active');
+
+            // Show target step
+            document.getElementById(`form-step-${targetStep}`).classList.add('active');
+            activeStep = targetStep;
+
+            updateIndicators(targetStep);
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+        }
+
+        function updateIndicators(step) {
+            for (let i = 1; i <= 3; i++) {
+                const badge = document.getElementById(`step-ind-${i}`);
+                if (i <= step) {
+                    badge.className = "w-10 h-10 rounded-full bg-gov-600 text-white font-bold flex items-center justify-center shadow-md";
+                } else {
+                    badge.className = "w-10 h-10 rounded-full bg-gray-200 text-gray-500 font-bold flex items-center justify-center";
+                }
+            }
+            const prog = document.getElementById('progress-bar');
+            if (step === 1) prog.style.width = '0%';
+            if (step === 2) prog.style.width = '50%';
+            if (step === 3) prog.style.width = '100%';
+        }
+
+        // Custom friendly Alert modal substitute
+        function alertMessage(msg) {
+            const div = document.createElement('div');
+            div.className = "fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4";
+            div.innerHTML = `
+                <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl animate-fade-in">
+                    <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 text-base">تنبيه هام</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">${msg}</p>
+                    <button onclick="this.closest('.fixed').remove()" class="w-full py-2.5 bg-gov-600 text-white text-xs font-bold rounded-xl hover:bg-gov-700 transition-all">حسناً</button>
+                </div>
+            `;
+            document.body.appendChild(div);
+        }
+
+        // Handle Master Form Submission to Supabase Cloud
+        async function handleFormSubmission(e) {
+            e.preventDefault();
+            const motivation = document.getElementById('motivation').value.trim();
+            const terms = document.getElementById('termsCheck').checked;
+
+            if (!motivation || !terms) {
+                alertMessage('يرجى كتابة دافع المشاركة والموافقة على الشروط.');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin ml-2"></i> جاري الحفظ أونلاين...`;
+
+            // Generate unique application ID
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            createdAppId = `GOV-2026-${randomNum}`;
+
+            const appData = {
+                appId: createdAppId,
+                fullName: document.getElementById('fullName').value,
+                nationalId: document.getElementById('nationalId').value,
+                college: document.getElementById('qualification').value,
+                committee: document.querySelector('input[name="committee"]:checked').value,
+                status: 'pending',
+                date: new Date().toLocaleDateString('ar-EG')
+            };
+
+            // إرسال البيانات مباشرة إلى جدول Supabase السحابي
+            const { error } = await _supabase
+                .from('simulation_applications')
+                .insert([appData]);
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fas fa-paper-plane"></i> تقديم الطلب الآن`;
+
+            if (error) {
+                alertMessage('حدث خطأ أثناء الاتصال بالسحابة وحفظ الطلب: ' + error.message);
+                return;
+            }
+
+            // Hide form and show success screen
+            document.getElementById('simulationMasterForm').classList.add('hidden');
+            document.getElementById('stepperContainer').classList.add('hidden');
+            document.getElementById('finalDisplayAppId').textContent = createdAppId;
+            document.getElementById('successCardBox').classList.remove('hidden');
+
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+        }
+
+        function copyAppId() {
+            const range = document.createRange();
+            range.selectNode(document.getElementById('finalDisplayAppId'));
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            alertMessage('تم نسخ رقم الطلب بنجاح إلى الحافظة.');
+        }
+
+        // Track search logic querying Supabase Cloud Database
+        async function executeTrackingSearch(e) {
+            e.preventDefault();
+            const queryId = document.getElementById('trackSearchInput').value.trim().toUpperCase();
+            const container = document.getElementById('trackingResultContainer');
+            container.classList.remove('hidden');
+            container.innerHTML = `<div class="bg-white p-6 rounded-2xl shadow-lg border text-center text-gray-400">جاري الاستعلام من السحابة...</div>`;
+
+            const { data, error } = await _supabase
+                .from('simulation_applications')
+                .select('*')
+                .eq('appId', queryId)
+                .maybeSingle();
+
+            if (error || !data) {
+                container.innerHTML = `<div class="bg-red-50 text-red-600 p-4 rounded-xl text-center font-bold text-sm border border-red-200">لم يتم العثور على طلب بهذا الرقم في السحابة. تأكد من صحة رقم الطلب.</div>`;
+                return;
+            }
+
+            let badge = data.status === 'accepted' ? 'text-green-700 bg-green-100' : (data.status === 'rejected' ? 'text-rose-700 bg-rose-100' : 'text-amber-700 bg-amber-100');
+            let statusName = data.status === 'accepted' ? 'تم القبول ✅' : (data.status === 'rejected' ? 'مرفوض ❌' : 'قيد المراجعة ⏳');
+
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl shadow-xl border space-y-3">
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <h3 class="font-bold text-base text-gray-900">${data.fullName}</h3>
+                        <span class="px-3 py-1 rounded-full text-xs font-extrabold ${badge}">${statusName}</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-600">
+                        <p>رقم الطلب: <strong class="font-mono text-gov-900">${data.appId}</strong></p>
+                        <p>اللجنة المختارة: <strong>${data.committee}</strong></p>
+                        <p>المؤهل: <strong>${data.college || '-'}</strong></p>
+                        <p>تاريخ التقديم: <strong>${data.date}</strong></p>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
