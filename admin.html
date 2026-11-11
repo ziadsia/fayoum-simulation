@@ -111,8 +111,8 @@
                                 <th class="p-4">اسم المتقدم</th>
                                 <th class="p-4">المؤهل</th>
                                 <th class="p-4">اللجنة</th>
-                                <th class="p-4">الحالة وموعد المقابلة</th>
-                                <th class="p-4 text-center">الإجراءات وتحديد الموعد</th>
+                                <th class="p-4">الحالة والتفاصيل</th>
+                                <th class="p-4 text-center">الإجراءات والتحكم</th>
                             </tr>
                         </thead>
                         <tbody id="applications-table-body" class="divide-y text-sm text-gray-700">
@@ -123,7 +123,7 @@
         </main>
     </div>
 
-    <!-- مودرن مودال (نافذة منبثقة عصرية) لتحديد الموعد والمكان -->
+    <!-- مودال القبول وتحديد الموعد والمكان (بشكل عصري وقوائم) -->
     <div id="interviewModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 space-y-6 transform transition-all border border-gray-100">
             <div class="flex justify-between items-center border-b pb-4">
@@ -136,12 +136,290 @@
                         <p class="text-xs text-gray-500" id="modalApplicantName">المتقدم: جار التحميل...</p>
                     </div>
                 </div>
-                <button onclick="closeInterviewModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold cursor-pointer"><i class="fas fa-times"></i></button>
+                <button onclick="closeModal('interviewModal')" class="text-gray-400 hover:text-gray-600 text-xl font-bold cursor-pointer"><i class="fas fa-times"></i></button>
             </div>
 
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                        <i class="fas fa-clock text-amber-600"></i> تاريخ وساعة المقابلة الشخصية
+                        <i class="fas fa-clock text-amber-600"></i> اختر تاريخ وساعة المقابلة
                     </label>
-                    <input type="text" id="modalInterviewDate" placeholder="مثال: الأحد 15 نوفمبر 2026 - الساعة 10 صباحاً" class="w-full p-3 rounded-xl border border-gray-30
+                    <select id="selectInterviewDate" class="w-full p-3 rounded-xl border border-gray-300 focus:border-amber-500 outline-none text-xs bg-gray-50 font-semibold">
+                        <option value="السبت 15 نوفمبر 2026 - الساعة 10:00 صباحاً">السبت 15 نوفمبر 2026 - 10:00 صباحاً</option>
+                        <option value="السبت 15 نوفمبر 2026 - الساعة 01:00 ظهراً">السبت 15 نوفمبر 2026 - 01:00 ظهراً</option>
+                        <option value="الأحد 16 نوفمبر 2026 - الساعة 10:00 صباحاً">الأحد 16 نوفمبر 2026 - 10:00 صباحاً</option>
+                        <option value="الأحد 16 نوفمبر 2026 - الساعة 01:00 ظهراً">الأحد 16 نوفمبر 2026 - 01:00 ظهراً</option>
+                        <option value="الإثنين 17 نوفمبر 2026 - الساعة 10:00 صباحاً">الإثنين 17 نوفمبر 2026 - 10:00 صباحاً</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                        <i class="fas fa-map-marker-alt text-rose-600"></i> اختر مكان المقابلة
+                    </label>
+                    <select id="selectInterviewLocation" class="w-full p-3 rounded-xl border border-gray-300 focus:border-amber-500 outline-none text-xs bg-gray-50 font-semibold">
+                        <option value="ديوان عام المحافظة - القاعة الكبرى">ديوان عام المحافظة - القاعة الكبرى</option>
+                        <option value="مبنى المجالس المحلية - الدور الثاني">مبنى المجالس المحلية - الدور الثاني</option>
+                        <option value="قاعة الاجتماعات الرئيسية - الديوان العام">قاعة الاجتماعات الرئيسية - الديوان العام</option>
+                        <option value="مركز التدريب وتطوير الإدارة المحلية">مركز التدريب وتطوير الإدارة المحلية</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+                <button onclick="closeModal('interviewModal')" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition cursor-pointer">إلغاء</button>
+                <button onclick="confirmAcceptWithInterview()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-emerald-600/20 cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fas fa-check"></i> تأكيد القبول والموعد
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال الرفض مع سبب الرفض -->
+    <div id="rejectModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 space-y-6 transform transition-all border border-gray-100">
+            <div class="flex justify-between items-center border-b pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-bold text-lg">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-base">تحديد سبب الرفض</h3>
+                        <p class="text-xs text-gray-500" id="modalRejectApplicantName">المتقدم: جار التحميل...</p>
+                    </div>
+                </div>
+                <button onclick="closeModal('rejectModal')" class="text-gray-400 hover:text-gray-600 text-xl font-bold cursor-pointer"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                        <i class="fas fa-pen text-red-600"></i> اختر أو اكتب سبب الرفض
+                    </label>
+                    <select id="selectRejectReason" onchange="checkCustomReason(this)" class="w-full p-3 rounded-xl border border-gray-300 focus:border-red-500 outline-none text-xs bg-gray-50 font-semibold mb-2">
+                        <option value="عدم استيفاء الشروط الأساسية للبرنامج">عدم استيفاء الشروط الأساسية للبرنامج</option>
+                        <option value="اكتمال العدد المخصص للجنة المختارة">اكتمال العدد المخصص للجنة المختارة</option>
+                        <option value="عدم دقة البيانات المدونة في الاستمارة">عدم دقة البيانات المدونة في الاستمارة</option>
+                        <option value="أخرى (اكتب السبب يدوياً)">أخرى (اكتب السبب يدوياً)...</option>
+                    </select>
+                    <input type="text" id="customRejectReasonInput" placeholder="اكتب سبب الرفض هنا..." class="hidden w-full p-3 rounded-xl border border-gray-300 focus:border-red-500 outline-none text-xs bg-gray-50">
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+                <button onclick="closeModal('rejectModal')" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition cursor-pointer">إلغاء</button>
+                <button onclick="confirmReject()" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-red-600/20 cursor-pointer flex items-center justify-center gap-2">
+                    <i class="fas fa-ban"></i> تأكيد رفض الطلب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://oolwmzcwevyxzkbmcqkn.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_NE4S9L4iCJGr1Q1eGTCYKw_AvxTMn9u';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let activeAppId = "";
+
+        window.onload = function() {
+            if (localStorage.getItem("adminLoggedIn") === "true") {
+                showDashboard();
+            }
+        };
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById("username").value.trim();
+            const pass = document.getElementById("password").value.trim();
+            
+            if (user === "admin" && pass === "123456") {
+                localStorage.setItem("adminLoggedIn", "true");
+                showDashboard();
+            } else {
+                document.getElementById("login-error").classList.remove("hidden");
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem("adminLoggedIn");
+            document.getElementById("admin-dashboard").classList.add("hidden");
+            document.getElementById("login-screen").classList.remove("hidden");
+        }
+
+        function showDashboard() {
+            document.getElementById("login-screen").classList.add("hidden");
+            document.getElementById("admin-dashboard").classList.remove("hidden");
+            loadApplications();
+        }
+
+        async function loadApplications() {
+            const tbody = document.getElementById("applications-table-body");
+            tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-400">جاري تحميل الطلبات...</td></tr>`;
+
+            const { data: apps, error } = await _supabase
+                .from('simulation_applications')
+                .select('*');
+
+            if (error || !apps) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500">خطأ في جلب البيانات من السحابة.</td></tr>`;
+                return;
+            }
+
+            document.getElementById("stat-total").innerText = apps.length;
+            document.getElementById("stat-pending").innerText = apps.filter(a => a.status === 'pending').length;
+            document.getElementById("stat-accepted").innerText = apps.filter(a => a.status === 'accepted').length;
+            document.getElementById("stat-rejected").innerText = apps.filter(a => a.status === 'rejected').length;
+
+            if (apps.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-400">لا توجد طلبات حتى الآن.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = "";
+            apps.slice().reverse().forEach((app) => {
+                let statusBadge = app.status === 'accepted' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1"><i class="fas fa-check"></i> مقبول</span>' : (app.status === 'rejected' ? '<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1"><i class="fas fa-times"></i> مرفوض</span>' : '<span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1"><i class="fas fa-hourglass-half"></i> قيد المراجعة</span>');
+                
+                let detailsInfo = '';
+                if (app.status === 'accepted' && app.interview_date) {
+                    detailsInfo = `
+                        <div class="mt-2 p-2 bg-emerald-50 rounded-lg border border-emerald-200 space-y-1 text-right">
+                            <p class="text-[11px] text-emerald-900 font-bold"><i class="fas fa-calendar-day text-emerald-600 ml-1"></i> ${app.interview_date}</p>
+                            <p class="text-[10px] text-gray-600"><i class="fas fa-map-pin text-rose-600 ml-1"></i> ${app.interview_location}</p>
+                        </div>
+                    `;
+                } else if (app.status === 'rejected' && app.interview_location) { // استخدمنا حقل المكان لحفظ سبب الرفض لتجنب تعديل الجدول
+                    detailsInfo = `
+                        <div class="mt-2 p-2 bg-red-50 rounded-lg border border-red-200 text-right">
+                            <p class="text-[11px] text-red-900 font-bold"><i class="fas fa-info-circle text-red-600 ml-1"></i> سبب الرفض: ${app.interview_location}</p>
+                        </div>
+                    `;
+                }
+
+                let cvButton = app.cv_link ? `<a href="${app.cv_link}" target="_blank" class="text-gov-600 hover:underline text-xs block mt-1"><i class="fas fa-file-pdf"></i> عرض السيرة الذاتية (CV)</a>` : '';
+
+                let row = `
+                    <tr class="hover:bg-gray-50/50 transition">
+                        <td class="p-4 font-mono font-bold text-amber-600">${app.appId}</td>
+                        <td class="p-4 font-semibold text-gray-900">${app.fullName} ${cvButton}</td>
+                        <td class="p-4">${app.college || '-'}</td>
+                        <td class="p-4">${app.committee}</td>
+                        <td class="p-4">${statusBadge} ${detailsInfo}</td>
+                        <td class="p-4 text-center space-x-1 space-x-reverse">
+                            <button onclick="openInterviewModal('${app.appId}', '${app.fullName}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer inline-flex items-center gap-1 transition shadow-sm">
+                                <i class="fas fa-calendar-plus"></i> قبول وتحديد موعد
+                            </button>
+                            <button onclick="openRejectModal('${app.appId}', '${app.fullName}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition shadow-sm inline-flex items-center gap-1">
+                                <i class="fas fa-ban"></i> رفض
+                            </button>
+                            <button onclick="updateStatus('${app.appId}', 'pending', '', '')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition">مراجعة</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function openInterviewModal(appId, fullName) {
+            activeAppId = appId;
+            document.getElementById("modalApplicantName").innerText = `المتقدم: ${fullName} (${appId})`;
+            document.getElementById("interviewModal").classList.remove("hidden");
+        }
+
+        function openRejectModal(appId, fullName) {
+            activeAppId = appId;
+            document.getElementById("modalRejectApplicantName").innerText = `المتقدم: ${fullName} (${appId})`;
+            document.getElementById("selectRejectReason").selectedIndex = 0;
+            document.getElementById("customRejectReasonInput").classList.add("hidden");
+            document.getElementById("rejectModal").classList.remove("hidden");
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add("hidden");
+        }
+
+        function checkCustomReason(select) {
+            const customInput = document.getElementById("customRejectReasonInput");
+            if (select.value.includes("أخرى")) {
+                customInput.classList.remove("hidden");
+                customInput.value = "";
+                customInput.focus();
+            } else {
+                customInput.classList.add("hidden");
+            }
+        }
+
+        async function confirmAcceptWithInterview() {
+            const date = document.getElementById("selectInterviewDate").value;
+            const location = document.getElementById("selectInterviewLocation").value;
+
+            const { error } = await _supabase
+                .from('simulation_applications')
+                .update({ 
+                    status: 'accepted',
+                    interview_date: date,
+                    interview_location: location
+                })
+                .eq('appId', activeAppId);
+
+            if (error) {
+                alert("حدث خطأ أثناء حفظ الموعد: " + error.message);
+                return;
+            }
+
+            closeModal('interviewModal');
+            loadApplications();
+        }
+
+        async function confirmReject() {
+            const select = document.getElementById("selectRejectReason");
+            let reason = select.value;
+            if (reason.includes("أخرى")) {
+                reason = document.getElementById("customRejectReasonInput").value.trim() || "غير مطابق للشروط";
+            }
+
+            const { error } = await _supabase
+                .from('simulation_applications')
+                .update({ 
+                    status: 'rejected',
+                    interview_date: '',
+                    interview_location: reason // سنحفظ سبب الرفض في عمود المكان لتظهر للمواطن بدقة
+                })
+                .eq('appId', activeAppId);
+
+            if (error) {
+                alert("حدث خطأ أثناء حفظ سبب الرفض: " + error.message);
+                return;
+            }
+
+            closeModal('rejectModal');
+            loadApplications();
+        }
+
+        async function updateStatus(appId, newStatus, date, location) {
+            const { error } = await _supabase
+                .from('simulation_applications')
+                .update({ 
+                    status: newStatus,
+                    interview_date: date || '',
+                    interview_location: location || ''
+                })
+                .eq('appId', appId);
+
+            if (error) {
+                alert("خطأ: " + error.message);
+                return;
+            }
+            loadApplications();
+        }
+
+        function filterTable() {
+            let input = document.getElementById("search-box").value.toLowerCase();
+            let rows = document.getElementById("applications-table-body").getElementsByTagName("tr");
+            for (let i = 0; i < rows.length; i++) {
+                rows[i].style.display = rows[i].innerText.toLowerCase().includes(input) ? "" : "none";
+            }
+        }
+    </script>
+</body>
+</html>
