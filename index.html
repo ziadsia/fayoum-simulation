@@ -322,6 +322,7 @@
         let activeStep = 1;
         let createdAppId = "";
 
+        // تعبئة قوائم تاريخ الميلاد تلقائياً (اليوم والسنة)
         window.addEventListener('DOMContentLoaded', () => {
             const daySel = document.getElementById('bDay');
             const yearSel = document.getElementById('bYear');
@@ -334,7 +335,7 @@
                     daySel.appendChild(opt);
                 }
                 const currentYr = new Date().getFullYear();
-                for (let y = currentYr - 16; y >= currentYr - 40; y--) {
+                for (let y = currentYr - 16; y >= currentYr - 50; y--) {
                     let opt = document.createElement('option');
                     opt.value = y;
                     opt.textContent = y;
@@ -485,7 +486,7 @@
             alertMessage('تم نسخ رقم الطلب بنجاح إلى الحافظة.');
         }
 
-        // دالة الاستعلام المطورة لعرض حالة الطلب وتفاصيل وموعد المقابلة بوضوح للمواطن
+        // دالة الاستعلام المطورة لإظهار ميعاد ومكان الانترفيو للمواطن فوراً
         async function executeTrackingSearch(e) {
             e.preventDefault();
             const queryId = document.getElementById('trackSearchInput').value.trim().toUpperCase();
@@ -507,7 +508,6 @@
             let badge = data.status === 'accepted' ? 'text-green-700 bg-green-100' : (data.status === 'rejected' ? 'text-rose-700 bg-rose-100' : 'text-amber-700 bg-amber-100');
             let statusName = data.status === 'accepted' ? 'تم القبول ✅' : (data.status === 'rejected' ? 'مرفوض ❌' : 'قيد المراجعة ⏳');
 
-            // إذا قبلت طلبه وحددت له ميعاد من لوحة الأدمين، سيظهر له هذا المربع بالتفصيل هنا فوراً
             let interviewBox = '';
             if (data.status === 'accepted') {
                 if (data.interview_date) {
