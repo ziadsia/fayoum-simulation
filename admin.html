@@ -11,23 +11,17 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Cairo', sans-serif; }
-
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             20%, 60% { transform: translateX(-8px); }
             40%, 80% { transform: translateX(8px); }
         }
-        .shake-animation {
-            animation: shake 0.4s ease-in-out;
-        }
-
+        .shake-animation { animation: shake 0.4s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
-        }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen text-gray-800">
@@ -131,7 +125,7 @@
                                 <th class="p-4">المؤهل / التخصص</th>
                                 <th class="p-4">اللجنة المختارة</th>
                                 <th class="p-4">الحالة الحالية</th>
-                                <th class="p-4 text-center">تغيير الحالة / الإجراءات</th>
+                                <th class="p-4 text-center">تغيير الحالة وتحديد المقابلة</th>
                             </tr>
                         </thead>
                         <tbody id="applications-table-body" class="divide-y divide-gray-100 text-sm text-gray-700">
@@ -143,7 +137,6 @@
     </div>
 
     <script>
-        // إعدادات اتصال Supabase السحابية
         const SUPABASE_URL = 'https://oolwmzcwevyxzkbmcqkn.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_NE4S9L4iCJGr1Q1eGTCYKw_AvxTMn9u';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -212,7 +205,6 @@
             } else {
                 failedAttempts++;
                 localStorage.setItem("admin_failed_attempts", failedAttempts);
-
                 loginCard.classList.add("shake-animation");
                 setTimeout(() => loginCard.classList.remove("shake-animation"), 400);
 
@@ -243,7 +235,6 @@
             loadApplications();
         }
 
-        // جلب الطلبات من سحابة Supabase مباشرة
         async function loadApplications() {
             const tbody = document.getElementById("applications-table-body");
             tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-400">جاري جلب الطلبات من السحابة...</td></tr>`;
@@ -287,7 +278,7 @@
                         <td class="p-4">${app.committee || 'غير متوفر'}</td>
                         <td class="p-4">${statusBadge}</td>
                         <td class="p-4 text-center space-x-1 space-x-reverse">
-                            <button onclick="updateStatus('${app.appId}', 'accepted')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm cursor-pointer">قبول</button>
+                            <button onclick="acceptWithInterview('${app.appId}')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm cursor-pointer">قبول وتحديد موعد</button>
                             <button onclick="updateStatus('${app.appId}', 'rejected')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm cursor-pointer">رفض</button>
                             <button onclick="updateStatus('${app.appId}', 'pending')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">مراجعة</button>
                         </td>
@@ -297,7 +288,31 @@
             });
         }
 
-        // تحديث حالة الطلب سحابياً وتحديث الواجهة فوراً
+        // دالة تحديد الموعد والمكان وإرسالهما للسحابة
+        async function acceptWithInterview(appId) {
+            const date = prompt("أدخل تاريخ وساعة المقابلة (مثال: الأحد 15 نوفمبر 2026 - الساعة 10 صباحاً):");
+            if (date === null || date.trim() === "") return;
+
+            const location = prompt("أدخل مكان المقابلة (مثال: ديوان عام المحافظة - القاعة الرئيسية):", "ديوان عام المحافظة");
+            if (location === null || location.trim() === "") return;
+
+            const { error } = await _supabase
+                .from('simulation_applications')
+                .update({ 
+                    status: 'accepted',
+                    interview_date: date.trim(),
+                    interview_location: location.trim()
+                })
+                .eq('appId', appId);
+
+            if (error) {
+                alert("حدث خطأ أثناء حفظ موعد المقابلة: " + error.message);
+                return;
+            }
+            alert("تم قبول الطلب وتحديد موعد ومكان المقابلة بنجاح!");
+            loadApplications();
+        }
+
         async function updateStatus(appId, newStatus) {
             const { error } = await _supabase
                 .from('simulation_applications')
