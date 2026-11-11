@@ -18,7 +18,7 @@
 <body class="bg-gray-50 min-h-screen text-gray-800">
 
     <!-- شاشة تسجيل الدخول -->
-    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 border border-gray-100">
             <div class="text-center mb-8">
                 <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 shadow-inner">
@@ -28,17 +28,17 @@
                 <p class="text-sm text-gray-500 mt-1">تسجيل الدخول للتحكم في طلبات محاكاة المحافظة</p>
             </div>
             
-            <form id="login-form" onsubmit="handleLogin(event); return false;" class="space-y-4">
+            <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">اسم المستخدم</label>
-                    <input type="text" id="username" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="admin">
+                    <input type="text" id="loginUser" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="admin">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">كلمة المرور</label>
-                    <input type="password" id="password" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="123456">
+                    <input type="password" id="loginPass" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="123456">
                 </div>
                 
-                <div id="login-error" class="hidden bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
+                <div id="loginError" class="hidden bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
                     <i class="fas fa-exclamation-circle"></i> اسم المستخدم أو كلمة المرور غير صحيحة!
                 </div>
 
@@ -50,7 +50,7 @@
     </div>
 
     <!-- لوحة التحكم الرئيسية -->
-    <div id="admin-dashboard" class="hidden min-h-screen flex flex-col">
+    <div id="dashboardScreen" class="hidden min-h-screen flex flex-col">
         <header class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <div class="flex items-center space-x-3 space-x-reverse">
@@ -69,28 +69,28 @@
                     <div class="p-4 rounded-xl bg-blue-50 text-blue-600 text-xl font-bold ml-4"><i class="fas fa-users"></i></div>
                     <div>
                         <p class="text-sm text-gray-500">إجمالي الطلبات</p>
-                        <h3 id="stat-total" class="text-2xl font-bold text-gray-900">0</h3>
+                        <h3 id="statTotal" class="text-2xl font-bold text-gray-900">0</h3>
                     </div>
                 </div>
                 <div class="bg-white p-6 rounded-2xl border shadow-sm flex items-center">
                     <div class="p-4 rounded-xl bg-amber-50 text-amber-600 text-xl font-bold ml-4"><i class="fas fa-clock"></i></div>
                     <div>
                         <p class="text-sm text-gray-500">قيد المراجعة</p>
-                        <h3 id="stat-pending" class="text-2xl font-bold text-gray-900">0</h3>
+                        <h3 id="statPending" class="text-2xl font-bold text-gray-900">0</h3>
                     </div>
                 </div>
                 <div class="bg-white p-6 rounded-2xl border shadow-sm flex items-center">
                     <div class="p-4 rounded-xl bg-green-50 text-green-600 text-xl font-bold ml-4"><i class="fas fa-check-circle"></i></div>
                     <div>
                         <p class="text-sm text-gray-500">المقبولون</p>
-                        <h3 id="stat-accepted" class="text-2xl font-bold text-gray-900">0</h3>
+                        <h3 id="statAccepted" class="text-2xl font-bold text-gray-900">0</h3>
                     </div>
                 </div>
                 <div class="bg-white p-6 rounded-2xl border shadow-sm flex items-center">
                     <div class="p-4 rounded-xl bg-red-50 text-red-600 text-xl font-bold ml-4"><i class="fas fa-times-circle"></i></div>
                     <div>
                         <p class="text-sm text-gray-500">المرفوضون</p>
-                        <h3 id="stat-rejected" class="text-2xl font-bold text-gray-900">0</h3>
+                        <h3 id="statRejected" class="text-2xl font-bold text-gray-900">0</h3>
                     </div>
                 </div>
             </div>
@@ -100,7 +100,7 @@
                     <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                         <i class="fas fa-list-check text-amber-600"></i> طلبات المتقدمين الواردة أونلاين
                     </h2>
-                    <input type="text" id="search-box" onkeyup="filterTable()" placeholder="ابحث بالاسم أو رقم الطلب..." class="px-4 py-2 border rounded-lg text-sm w-full sm:w-72 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <input type="text" id="searchBox" onkeyup="filterTable()" placeholder="ابحث بالاسم أو رقم الطلب..." class="px-4 py-2 border rounded-lg text-sm w-full sm:w-72 focus:outline-none focus:ring-2 focus:ring-amber-500">
                 </div>
 
                 <div class="overflow-x-auto">
@@ -115,7 +115,7 @@
                                 <th class="p-4 text-center">الإجراءات والتحكم</th>
                             </tr>
                         </thead>
-                        <tbody id="applications-table-body" class="divide-y text-sm text-gray-700">
+                        <tbody id="tableBody" class="divide-y text-sm text-gray-700">
                         </tbody>
                     </table>
                 </div>
@@ -123,88 +123,63 @@
         </main>
     </div>
 
-    <!-- نافذة منبثقة مرنة جداً لتحديد الموعد والمكان الحر -->
-    <div id="interviewModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 space-y-6 transform transition-all border border-gray-100">
-            <div class="flex justify-between items-center border-b pb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-lg">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-gray-900 text-base">تحديد موعد ومكان المقابلة</h3>
-                        <p class="text-xs text-gray-500" id="modalApplicantName">المتقدم: جار التحميل...</p>
-                    </div>
-                </div>
-                <button onclick="closeModal('interviewModal')" class="text-gray-400 hover:text-gray-600 text-xl font-bold cursor-pointer"><i class="fas fa-times"></i></button>
+    <!-- نافذة منبثقة لتحديد الموعد والمكان (مرنة بالكامل) -->
+    <div id="interviewModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 space-y-5 border">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-gray-900 text-base">تحديد موعد ومكان المقابلة</h3>
+                <button onclick="closeModal('interviewModal')" class="text-gray-400 hover:text-gray-600 text-lg font-bold"><i class="fas fa-times"></i></button>
             </div>
-
-            <div class="space-y-4">
+            <p class="text-xs text-gray-500" id="interviewModalTitle">المتقدم: ...</p>
+            
+            <div class="space-y-3">
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                        <i class="fas fa-clock text-amber-600"></i> موعد المقابلة (اكتب التاريخ والوقت بحرية تامة)
-                    </label>
-                    <input type="text" id="customInterviewDate" placeholder="مثال: غداً الساعة 10 صباحاً أو الأربعاء القادم..." class="w-full p-3 rounded-xl border border-gray-300 focus:border-amber-500 outline-none text-xs bg-gray-50 font-semibold">
+                    <label class="block text-xs font-bold text-gray-700 mb-1">تاريخ ووقت المقابلة (اكتب بحرية)</label>
+                    <input type="text" id="inputInterviewDate" placeholder="مثال: الأحد القادم الساعة 10 صباحاً" class="w-full p-3 rounded-xl border text-xs bg-gray-50 outline-none focus:border-amber-500">
                 </div>
-
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                        <i class="fas fa-map-marker-alt text-rose-600"></i> مكان المقابلة (اكتب المكان بحرية تامة)
-                    </label>
-                    <input type="text" id="customInterviewLocation" placeholder="مثال: ديوان عام المحافظة - قاعة الاجتماعات..." class="w-full p-3 rounded-xl border border-gray-300 focus:border-amber-500 outline-none text-xs bg-gray-50 font-semibold">
+                    <label class="block text-xs font-bold text-gray-700 mb-1">مكان المقابلة (اكتب بحرية)</label>
+                    <input type="text" id="inputInterviewLocation" value="ديوان عام المحافظة - القاعة الكبرى" class="w-full p-3 rounded-xl border text-xs bg-gray-50 outline-none focus:border-amber-500">
                 </div>
             </div>
 
-            <div class="flex gap-3 pt-2">
-                <button onclick="closeModal('interviewModal')" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition cursor-pointer">إلغاء</button>
-                <button onclick="confirmAcceptWithInterview()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-emerald-600/20 cursor-pointer flex items-center justify-center gap-2">
-                    <i class="fas fa-check"></i> تأكيد القبول والموعد
-                </button>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeModal('interviewModal')" class="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-xs font-bold">إلغاء</button>
+                <button onclick="saveInterviewDetails()" class="flex-1 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow">حفظ وقبول</button>
             </div>
         </div>
     </div>
 
-    <!-- نافذة منبثقة للرفض مع اختيار سبب الرفض -->
-    <div id="rejectModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 space-y-6 transform transition-all border border-gray-100">
-            <div class="flex justify-between items-center border-b pb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-bold text-lg">
-                        <i class="fas fa-ban"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-gray-900 text-base">تحديد سبب الرفض</h3>
-                        <p class="text-xs text-gray-500" id="modalRejectApplicantName">المتقدم: جار التحميل...</p>
-                    </div>
-                </div>
-                <button onclick="closeModal('rejectModal')" class="text-gray-400 hover:text-gray-600 text-xl font-bold cursor-pointer"><i class="fas fa-times"></i></button>
+    <!-- نافذة منبثقة للرفض وسبب الرفض -->
+    <div id="rejectModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 space-y-5 border">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-gray-900 text-base">تحديد سبب الرفض</h3>
+                <button onclick="closeModal('rejectModal')" class="text-gray-400 hover:text-gray-600 text-lg font-bold"><i class="fas fa-times"></i></button>
             </div>
-
-            <div class="space-y-4">
+            <p class="text-xs text-gray-500" id="rejectModalTitle">المتقدم: ...</p>
+            
+            <div class="space-y-3">
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                        <i class="fas fa-pen text-red-600"></i> اختر أو اكتب سبب الرفض
-                    </label>
-                    <select id="selectRejectReason" onchange="checkCustomReason(this)" class="w-full p-3 rounded-xl border border-gray-300 focus:border-red-500 outline-none text-xs bg-gray-50 font-semibold mb-2">
+                    <label class="block text-xs font-bold text-gray-700 mb-1">سبب الرفض</label>
+                    <select id="selectRejectReason" onchange="toggleCustomReason(this)" class="w-full p-3 rounded-xl border text-xs bg-gray-50 outline-none mb-2">
                         <option value="عدم استيفاء الشروط الأساسية للبرنامج">عدم استيفاء الشروط الأساسية للبرنامج</option>
                         <option value="اكتمال العدد المخصص للجنة المختارة">اكتمال العدد المخصص للجنة المختارة</option>
                         <option value="عدم دقة البيانات المدونة في الاستمارة">عدم دقة البيانات المدونة في الاستمارة</option>
                         <option value="أخرى (اكتب السبب يدوياً)">أخرى (اكتب السبب يدوياً)...</option>
                     </select>
-                    <input type="text" id="customRejectReasonInput" placeholder="اكتب سبب الرفض هنا..." class="hidden w-full p-3 rounded-xl border border-gray-300 focus:border-red-500 outline-none text-xs bg-gray-50">
+                    <input type="text" id="inputCustomReason" placeholder="اكتب السبب هنا..." class="hidden w-full p-3 rounded-xl border text-xs bg-gray-50 outline-none">
                 </div>
             </div>
 
-            <div class="flex gap-3 pt-2">
-                <button onclick="closeModal('rejectModal')" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition cursor-pointer">إلغاء</button>
-                <button onclick="confirmReject()" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-red-600/20 cursor-pointer flex items-center justify-center gap-2">
-                    <i class="fas fa-ban"></i> تأكيد رفض الطلب
-                </button>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeModal('rejectModal')" class="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-xs font-bold">إلغاء</button>
+                <button onclick="saveRejectDetails()" class="flex-1 py-2.5 bg-red-600 text-white rounded-xl text-xs font-bold shadow">تأكيد الرفض</button>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript Controllers -->
+    <!-- كود التشغيل والاتصال بالسحابة -->
     <script>
         const SUPABASE_URL = 'https://oolwmzcwevyxzkbmcqkn.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_NE4S9L4iCJGr1Q1eGTCYKw_AvxTMn9u';
@@ -220,46 +195,46 @@
 
         function handleLogin(e) {
             e.preventDefault();
-            const user = document.getElementById("username").value.trim();
-            const pass = document.getElementById("password").value.trim();
+            const user = document.getElementById("loginUser").value.trim();
+            const pass = document.getElementById("loginPass").value.trim();
             
             if (user === "admin" && pass === "123456") {
                 localStorage.setItem("adminLoggedIn", "true");
                 showDashboard();
             } else {
-                document.getElementById("login-error").classList.remove("hidden");
+                document.getElementById("loginError").classList.remove("hidden");
             }
         }
 
         function handleLogout() {
             localStorage.removeItem("adminLoggedIn");
-            document.getElementById("admin-dashboard").classList.add("hidden");
-            document.getElementById("login-screen").classList.remove("hidden");
+            document.getElementById("dashboardScreen").classList.add("hidden");
+            document.getElementById("loginScreen").classList.remove("hidden");
         }
 
         function showDashboard() {
-            document.getElementById("login-screen").classList.add("hidden");
-            document.getElementById("admin-dashboard").classList.remove("hidden");
-            loadApplications();
+            document.getElementById("loginScreen").classList.add("hidden");
+            document.getElementById("dashboardScreen").classList.remove("hidden");
+            loadApps();
         }
 
-        async function loadApplications() {
-            const tbody = document.getElementById("applications-table-body");
-            tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-400">جاري تحميل الطلبات من السحابة...</td></tr>`;
+        async function loadApps() {
+            const tbody = document.getElementById("tableBody");
+            tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-400">جاري تحميل الطلبات...</td></tr>`;
 
             const { data: apps, error } = await _supabase
                 .from('simulation_applications')
                 .select('*');
 
             if (error || !apps) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500">حدث خطأ أثناء جلب البيانات. تأكد من إيقاف RLS في قاعدة البيانات.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-red-500">خطأ في الاتصال بالسحابة. تأكد من إيقاف RLS في Supabase.</td></tr>`;
                 return;
             }
 
-            document.getElementById("stat-total").innerText = apps.length;
-            document.getElementById("stat-pending").innerText = apps.filter(a => a.status === 'pending').length;
-            document.getElementById("stat-accepted").innerText = apps.filter(a => a.status === 'accepted').length;
-            document.getElementById("stat-rejected").innerText = apps.filter(a => a.status === 'rejected').length;
+            document.getElementById("statTotal").innerText = apps.length;
+            document.getElementById("statPending").innerText = apps.filter(a => a.status === 'pending').length;
+            document.getElementById("statAccepted").innerText = apps.filter(a => a.status === 'accepted').length;
+            document.getElementById("statRejected").innerText = apps.filter(a => a.status === 'rejected').length;
 
             if (apps.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-400">لا توجد طلبات حتى الآن.</td></tr>`;
@@ -268,151 +243,107 @@
 
             tbody.innerHTML = "";
             apps.slice().reverse().forEach((app) => {
-                let statusBadge = app.status === 'accepted' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1"><i class="fas fa-check"></i> مقبول</span>' : (app.status === 'rejected' ? '<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1"><i class="fas fa-times"></i> مرفوض</span>' : '<span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1"><i class="fas fa-hourglass-half"></i> قيد المراجعة</span>');
+                let badge = app.status === 'accepted' ? '<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">مقبول</span>' : (app.status === 'rejected' ? '<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">مرفوض</span>' : '<span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold">قيد المراجعة</span>');
                 
-                let detailsInfo = '';
+                let details = '';
                 if (app.status === 'accepted' && app.interview_date) {
-                    detailsInfo = `
-                        <div class="mt-2 p-2 bg-emerald-50 rounded-lg border border-emerald-200 space-y-1 text-right">
-                            <p class="text-[11px] text-emerald-900 font-bold"><i class="fas fa-calendar-day text-emerald-600 ml-1"></i> ${app.interview_date}</p>
-                            <p class="text-[10px] text-gray-600"><i class="fas fa-map-pin text-rose-600 ml-1"></i> ${app.interview_location}</p>
-                        </div>
-                    `;
+                    details = `<div class="mt-2 p-2 bg-emerald-50 rounded border text-[11px] text-emerald-900">📅 ${app.interview_date}<br>📍 ${app.interview_location}</div>`;
                 } else if (app.status === 'rejected' && app.interview_location) {
-                    detailsInfo = `
-                        <div class="mt-2 p-2 bg-red-50 rounded-lg border border-red-200 text-right">
-                            <p class="text-[11px] text-red-900 font-bold"><i class="fas fa-info-circle text-red-600 ml-1"></i> سبب الرفض: ${app.interview_location}</p>
-                        </div>
-                    `;
+                    details = `<div class="mt-2 p-2 bg-red-50 rounded border text-[11px] text-red-900">❌ السبب: ${app.interview_location}</div>`;
                 }
 
-                let cvButton = app.cv_link ? `<a href="${app.cv_link}" target="_blank" class="text-gov-600 hover:underline text-xs block mt-1"><i class="fas fa-file-pdf"></i> عرض السيرة الذاتية (CV)</a>` : '';
+                let cv = app.cv_link ? `<a href="${app.cv_link}" target="_blank" class="text-gov-600 hover:underline text-xs block mt-1"><i class="fas fa-file-pdf"></i> عرض السيرة الذاتية (CV)</a>` : '';
 
-                let row = `
-                    <tr class="hover:bg-gray-50/50 transition">
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
                         <td class="p-4 font-mono font-bold text-amber-600">${app.appId}</td>
-                        <td class="p-4 font-semibold text-gray-900">${app.fullName} ${cvButton}</td>
+                        <td class="p-4 font-semibold">${app.fullName} ${cv}</td>
                         <td class="p-4">${app.college || '-'}</td>
                         <td class="p-4">${app.committee}</td>
-                        <td class="p-4">${statusBadge} ${detailsInfo}</td>
+                        <td class="p-4">${badge} ${details}</td>
                         <td class="p-4 text-center space-x-1 space-x-reverse">
-                            <button onclick="openInterviewModal('${app.appId}', '${app.fullName}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer inline-flex items-center gap-1 transition shadow-sm">
-                                <i class="fas fa-calendar-plus"></i> قبول وتحديد موعد
-                            </button>
-                            <button onclick="openRejectModal('${app.appId}', '${app.fullName}')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition shadow-sm inline-flex items-center gap-1">
-                                <i class="fas fa-ban"></i> رفض
-                            </button>
-                            <button onclick="updateStatus('${app.appId}', 'pending', '', '')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition">مراجعة</button>
+                            <button onclick="openInterviewModal('${app.appId}', '${app.fullName}')" class="bg-emerald-600 text-white px-3 py-1.5 rounded text-xs font-bold cursor-pointer">قبول وموعد</button>
+                            <button onclick="openRejectModal('${app.appId}', '${app.fullName}')" class="bg-red-600 text-white px-3 py-1.5 rounded text-xs font-bold cursor-pointer">رفض</button>
+                            <button onclick="setStatus('${app.appId}', 'pending', '', '')" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded text-xs font-bold cursor-pointer">مراجعة</button>
                         </td>
                     </tr>
                 `;
-                tbody.innerHTML += row;
             });
         }
 
-        function openInterviewModal(appId, fullName) {
+        function openInterviewModal(appId, name) {
             activeAppId = appId;
-            document.getElementById("modalApplicantName").innerText = `المتقدم: ${fullName} (${appId})`;
-            document.getElementById("customInterviewDate").value = "";
-            document.getElementById("customInterviewLocation").value = "ديوان عام المحافظة - القاعة الكبرى";
+            document.getElementById("interviewModalTitle").innerText = `المتقدم: ${name} (${appId})`;
+            document.getElementById("inputInterviewDate").value = "";
             document.getElementById("interviewModal").classList.remove("hidden");
         }
 
-        function openRejectModal(appId, fullName) {
+        function openRejectModal(appId, name) {
             activeAppId = appId;
-            document.getElementById("modalRejectApplicantName").innerText = `المتقدم: ${fullName} (${appId})`;
+            document.getElementById("rejectModalTitle").innerText = `المتقدم: ${name} (${appId})`;
             document.getElementById("selectRejectReason").selectedIndex = 0;
-            document.getElementById("customRejectReasonInput").classList.add("hidden");
+            document.getElementById("inputCustomReason").classList.add("hidden");
             document.getElementById("rejectModal").classList.remove("hidden");
         }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add("hidden");
+        function closeModal(id) {
+            document.getElementById(id).classList.add("hidden");
         }
 
-        function checkCustomReason(select) {
-            const customInput = document.getElementById("customRejectReasonInput");
-            if (select.value.includes("أخرى")) {
-                customInput.classList.remove("hidden");
-                customInput.value = "";
-                customInput.focus();
+        function toggleCustomReason(sel) {
+            const input = document.getElementById("inputCustomReason");
+            if (sel.value.includes("أخرى")) {
+                input.classList.remove("hidden");
+                input.value = "";
+                input.focus();
             } else {
-                customInput.classList.add("hidden");
+                input.classList.add("hidden");
             }
         }
 
-        async function confirmAcceptWithInterview() {
-            const date = document.getElementById("customInterviewDate").value.trim();
-            const location = document.getElementById("customInterviewLocation").value.trim();
+        async function saveInterviewDetails() {
+            const date = document.getElementById("inputInterviewDate").value.trim();
+            const location = document.getElementById("inputInterviewLocation").value.trim();
 
             if (!date) {
-                alert("يرجى إدخال موعد المقابلة.");
+                alert("يرجى كتابة موعد المقابلة.");
                 return;
             }
 
-            const { error } = await _supabase
-                .from('simulation_applications')
-                .update({ 
-                    status: 'accepted',
-                    interview_date: date,
-                    interview_location: location || 'ديوان عام المحافظة'
-                })
-                .eq('appId', activeAppId);
-
-            if (error) {
-                alert("حدث خطأ أثناء حفظ الموعد: " + error.message);
-                return;
-            }
-
+            await setStatus(activeAppId, 'accepted', date, location || 'ديوان عام المحافظة');
             closeModal('interviewModal');
-            loadApplications();
         }
 
-        async function confirmReject() {
-            const select = document.getElementById("selectRejectReason");
-            let reason = select.value;
+        async function saveRejectDetails() {
+            let reason = document.getElementById("selectRejectReason").value;
             if (reason.includes("أخرى")) {
-                reason = document.getElementById("customRejectReasonInput").value.trim() || "غير مطابق للشروط";
+                reason = document.getElementById("inputCustomReason").value.trim() || "غير مطابقة للشروط";
             }
 
-            const { error } = await _supabase
-                .from('simulation_applications')
-                .update({ 
-                    status: 'rejected',
-                    interview_date: '',
-                    interview_location: reason
-                })
-                .eq('appId', activeAppId);
-
-            if (error) {
-                alert("حدث خطأ أثناء حفظ سبب الرفض: " + error.message);
-                return;
-            }
-
+            await setStatus(activeAppId, 'rejected', '', reason);
             closeModal('rejectModal');
-            loadApplications();
         }
 
-        async function updateStatus(appId, newStatus, date, location) {
+        async function setStatus(appId, status, date, location) {
             const { error } = await _supabase
                 .from('simulation_applications')
                 .update({ 
-                    status: newStatus,
-                    interview_date: date || '',
-                    interview_location: location || ''
+                    status: status,
+                    interview_date: date,
+                    interview_location: location
                 })
                 .eq('appId', appId);
 
             if (error) {
-                alert("خطأ: " + error.message);
+                alert("حدث خطأ: " + error.message);
                 return;
             }
-            loadApplications();
+            loadApps();
         }
 
         function filterTable() {
-            let input = document.getElementById("search-box").value.toLowerCase();
-            let rows = document.getElementById("applications-table-body").getElementsByTagName("tr");
+            let input = document.getElementById("searchBox").value.toLowerCase();
+            let rows = document.getElementById("tableBody").getElementsByTagName("tr");
             for (let i = 0; i < rows.length; i++) {
                 rows[i].style.display = rows[i].innerText.toLowerCase().includes(input) ? "" : "none";
             }
